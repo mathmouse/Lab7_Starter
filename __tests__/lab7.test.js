@@ -48,7 +48,7 @@ describe('Basic user flow for Website', () => {
 
     // Expect allArePopulated to still be true
     expect(allArePopulated).toBe(true);
-    
+
   }, 10000);
 
   // Check to make sure that when you click "Add to Cart" on the first <product-item> that
@@ -89,14 +89,12 @@ describe('Basic user flow for Website', () => {
      * Check to see if the innerText of #cart-count is 20
      * Remember to remove the .skip from this it once you are finished writing this test.
      */
-    const productItems = await page.$$('product-item');
-
-    for (let i = 0; i < productItems.length; i++) {
-      const item = productItems[i];
-      const shadowRoot = await item.evaluateHandle(el => el.shadowRoot);
-      const button = await shadowRoot.$('button');
-      await button.click();
-    }
+    await page.evaluate(() => {
+      document.querySelectorAll('product-item').forEach(item => {
+        const btn = item.shadowRoot.querySelector('button');
+        if (btn.innerText === 'Add to Cart') btn.click();
+      });
+    });
 
     const cartCount = await page.$eval('#cart-count', el => el.innerText);
 
@@ -158,15 +156,11 @@ describe('Basic user flow for Website', () => {
      * Once you have, check to make sure that #cart-count is now 0
      * Remember to remove the .skip from this it once you are finished writing this test.
      */
-    const productItems = await page.$$('product-item');
-
-    for (let i = 0; i < productItems.length; i++) {
-      const item = productItems[i];
-      const shadowRoot = await item.evaluateHandle(el => el.shadowRoot);
-      const button = await shadowRoot.$('button');
-
-      await button.click();
-    }
+    await page.evaluate(() => {
+      document.querySelectorAll('product-item').forEach(item => {
+        item.shadowRoot.querySelector('button').click();
+      });
+    });
 
     const cartCount = await page.$eval('#cart-count', el => el.innerText);
 
