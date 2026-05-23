@@ -105,16 +105,32 @@ describe('Basic user flow for Website', () => {
   }, 10000);
 
   // Check to make sure that after you reload the page it remembers all of the items in your cart
-  it.skip('Checking number of items in cart on screen after reload', async () => {
+  it('Checking number of items in cart on screen after reload', async () => {
     console.log('Checking number of items in cart on screen after reload...');
 
     /**
-     **** TODO - STEP 4 **** 
      * Reload the page, then select all of the <product-item> elements, and check every
        element to make sure that all of their buttons say "Remove from Cart".
      * Also check to make sure that #cart-count is still 20
      * Remember to remove the .skip from this it once you are finished writing this test.
      */
+    await page.reload();
+
+    const productItems = await page.$$('product-item');
+
+    for (let i = 0; i < productItems.length; i++) {
+      const item = productItems[i];
+      const shadowRoot = await item.evaluateHandle(el => el.shadowRoot);
+      const button = await shadowRoot.$('button');
+      const textHandle = await button.getProperty('innerText');
+      const text = await textHandle.jsonValue();
+
+      expect(text).toBe('Remove from Cart');
+    }
+
+    const cartCount = await page.$eval('#cart-count', el => el.innerText);
+
+    expect(cartCount).toBe('20');
 
   }, 10000);
 
